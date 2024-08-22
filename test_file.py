@@ -5,6 +5,7 @@ import pickle
 
 import pandas as pd
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
 
 def load_estimator():
@@ -30,6 +31,15 @@ def load_datasets():
     x_test = test_dataset.drop("type", axis=1)
     y_test = test_dataset["type"]
 
+    le = LabelEncoder()
+    ohe = OneHotEncoder()
+
+    x_train = ohe.fit_transform(x_train)
+    x_test = ohe.transform(x_test)
+
+    y_train = le.fit_transform(y_train)
+    y_test = le.transform(y_test)
+
     return x_train, x_test, y_train, y_test
 
 
@@ -47,11 +57,6 @@ def compute_metrics():
     estimator = load_estimator()
     assert estimator is not None, "Model not found"
 
-
-if __name__ == "__main__":
-    run_grading()
-    
-
     x_train, x_test, y_true_train, y_true_test = load_datasets()
 
     y_pred_train = estimator.predict(x_train)
@@ -63,10 +68,15 @@ if __name__ == "__main__":
     return accuracy_train, accuracy_test
 
 
-def run_grading():
+def test_run_grading():
     """Run grading script."""
 
     accuracy_train, accuracy_test = compute_metrics()
 
     assert accuracy_train > 0.99
     assert accuracy_test > 0.99
+
+
+
+if __name__ == "__main__":
+    test_run_grading()
